@@ -36,7 +36,7 @@ Replace the generated `package.json` with the following:
 
 ```json
 {
-  "name": "sigma-mcp-server",
+  "name": "mcp-app-code-engine-mcp-server",
   "version": "1.0.0",
   "description": "MCP server for refund processing on IBM Code Engine",
   "type": "module",
@@ -143,13 +143,13 @@ The complete `Dockerfile` is in `mcp-server/Dockerfile` in this folder. It:
 
 ```bash
 # From inside mcp-server/
-docker build -t sigma-mcp-server:latest .
+docker build -t mcp-app-code-engine-mcp-server:latest .
 
 # Run locally
 docker run --rm \
   -p 8080:8080 \
   -e MCP_API_KEY=test-key \
-  sigma-mcp-server:latest
+  mcp-app-code-engine-mcp-server:latest
 ```
 
 In a second terminal, test it:
@@ -171,13 +171,13 @@ Expected: a JSON response listing `process_refund` and `get_refund_status`.
 ibmcloud cr login
 
 # Tag the image
-docker tag sigma-mcp-server:latest us.icr.io/sigma-ns/sigma-mcp-server:latest
+docker tag mcp-app-code-engine-mcp-server:latest us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest
 
 # Push
-docker push us.icr.io/sigma-ns/sigma-mcp-server:latest
+docker push us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest
 
 # Verify
-ibmcloud cr image-list --restrict sigma-ns
+ibmcloud cr image-list --restrict mcp-app-code-engine-ns
 ```
 
 ---

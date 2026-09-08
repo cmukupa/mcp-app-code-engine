@@ -17,7 +17,7 @@ User (Orchestrate chat)
   MCP Skill Provider (built into Orchestrate)
         │  HTTP POST /mcp  +  X-API-Key
         ▼
-  sigma-mcp-server  (IBM Code Engine)
+  mcp-app-code-engine-mcp-server  (IBM Code Engine)
         │
         ▼
   Returns refund result to Agent
@@ -31,7 +31,7 @@ User (Orchestrate chat)
 ## 6.2 Prerequisites
 
 Before starting, confirm you have:
-- [ ] The MCP server deployed and its URL (e.g. `https://sigma-mcp-server.<id>.us-south.codeengine.appdomain.cloud`)
+- [ ] The MCP server deployed and its URL (e.g. `https://mcp-app-code-engine-mcp-server.<id>.us-south.codeengine.appdomain.cloud`)
 - [ ] The `MCP_API_KEY` value you set in guide 05
 - [ ] Access to an IBM Watson Orchestrate instance with admin rights
 
@@ -52,7 +52,7 @@ In the "Add MCP server" dialog, enter the following:
 | Field | Value |
 |---|---|
 | **Display name** | `Sigma Refund MCP` |
-| **MCP server URL** | `https://sigma-mcp-server.<id>.us-south.codeengine.appdomain.cloud/mcp` |
+| **MCP server URL** | `https://mcp-app-code-engine-mcp-server.<id>.us-south.codeengine.appdomain.cloud/mcp` |
 | **Authentication type** | `API Key` |
 | **Header name** | `X-API-Key` |
 | **API key value** | Your `MCP_API_KEY` value from guide 05 |
@@ -201,18 +201,18 @@ When you need to rotate the key:
 2. Update the Code Engine secret:
    ```bash
    ibmcloud ce secret update \
-     --name sigma-mcp-secrets \
+     --name mcp-app-code-engine-mcp-secrets \
      --from-literal MCP_API_KEY="$NEW_KEY"
 
    ibmcloud ce secret update \
-     --name sigma-chatbot-secrets \
+     --name mcp-app-code-engine-chatbot-secrets \
      --from-literal MCP_API_KEY="$NEW_KEY"
    ```
 
 3. Trigger a rolling restart:
    ```bash
-   ibmcloud ce application update --name sigma-mcp-server --image us.icr.io/sigma-ns/sigma-mcp-server:latest
-   ibmcloud ce application update --name sigma-chatbot   --image us.icr.io/sigma-ns/sigma-chatbot:latest
+   ibmcloud ce application update --name mcp-app-code-engine-mcp-server --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest
+   ibmcloud ce application update --name mcp-app-code-engine-chatbot   --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest
    ```
 
 4. Update the API key in the Orchestrate MCP skill provider (Skills and apps → Sigma Refund MCP → Edit → update key → Save).
@@ -223,12 +223,12 @@ When you need to rotate the key:
 
 | Resource | Type | URL / Name |
 |---|---|---|
-| `sigma-mcp-server` | Code Engine Application | `https://sigma-mcp-server.<id>.codeengine.appdomain.cloud` |
-| `sigma-chatbot` | Code Engine Application | `https://sigma-chatbot.<id>.codeengine.appdomain.cloud` |
-| `sigma-icr` | Code Engine Registry Secret | ICR pull credentials |
-| `sigma-mcp-secrets` | Code Engine Secret | `MCP_API_KEY` |
-| `sigma-chatbot-secrets` | Code Engine Secret | `JWT_SECRET`, `MCP_API_KEY` |
-| `sigma-chatbot-config` | Code Engine ConfigMap | `MCP_SERVER_URL` |
+| `mcp-app-code-engine-mcp-server` | Code Engine Application | `https://mcp-app-code-engine-mcp-server.<id>.codeengine.appdomain.cloud` |
+| `mcp-app-code-engine-chatbot` | Code Engine Application | `https://mcp-app-code-engine-chatbot.<id>.codeengine.appdomain.cloud` |
+| `mcp-app-code-engine-icr` | Code Engine Registry Secret | ICR pull credentials |
+| `mcp-app-code-engine-mcp-secrets` | Code Engine Secret | `MCP_API_KEY` |
+| `mcp-app-code-engine-chatbot-secrets` | Code Engine Secret | `JWT_SECRET`, `MCP_API_KEY` |
+| `mcp-app-code-engine-chatbot-config` | Code Engine ConfigMap | `MCP_SERVER_URL` |
 | `Sigma Refund MCP` | Orchestrate Skill Provider | Connected to `/mcp` endpoint |
 | `Refund Agent` | Orchestrate AI Agent | Uses `process_refund`, `get_refund_status` |
 
@@ -237,6 +237,6 @@ When you need to rotate the key:
 **You're done!** The complete flow is now live:
 
 ```
-User → Orchestrate Refund Agent → MCP Skill Provider → sigma-mcp-server (Code Engine)
-User → Sigma Chatbot (Code Engine) → sigma-mcp-server (Code Engine)
+User → Orchestrate Refund Agent → MCP Skill Provider → mcp-app-code-engine-mcp-server (Code Engine)
+User → mcp-app-code-engine Chatbot (Code Engine) → mcp-app-code-engine-mcp-server (Code Engine)
 ```

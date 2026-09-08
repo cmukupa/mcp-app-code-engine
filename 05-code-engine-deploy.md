@@ -10,7 +10,7 @@ This guide deploys the MCP server and the chatbot app as Code Engine **applicati
 ```bash
 ibmcloud login --sso
 ibmcloud target -g Default          # your resource group
-ibmcloud ce project select --name sigma-project
+ibmcloud ce project select --name mcp-app-code-engine-project
 ```
 
 ---
@@ -21,22 +21,22 @@ Code Engine needs credentials to pull images from your private ICR namespace.
 
 ```bash
 # Create an IAM API key for the pull secret
-ibmcloud iam api-key-create sigma-icr-key \
-  --description "Pull secret for sigma Code Engine project" \
-  -f sigma-icr-key.json
+ibmcloud iam api-key-create mcp-app-code-engine-icr-key \
+  --description "Pull secret for mcp-app-code-engine Code Engine project" \
+  -f mcp-app-code-engine-icr-key.json
 
 # Store the API key value (from the JSON file)
-ICR_API_KEY=$(jq -r .apikey sigma-icr-key.json)
+ICR_API_KEY=$(jq -r .apikey mcp-app-code-engine-icr-key.json)
 
 # Create the registry secret in Code Engine
 ibmcloud ce registry create \
-  --name sigma-icr \
+  --name mcp-app-code-engine-icr \
   --server us.icr.io \
   --username iamapikey \
   --password "$ICR_API_KEY"
 
 # Delete the local key file — never keep secrets on disk
-rm sigma-icr-key.json
+rm mcp-app-code-engine-icr-key.json
 ```
 
 ---
@@ -51,14 +51,14 @@ ibmcloud cr login
 
 # MCP server
 cd mcp-server
-docker build -t us.icr.io/sigma-ns/sigma-mcp-server:latest .
-docker push us.icr.io/sigma-ns/sigma-mcp-server:latest
+docker build -t us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest .
+docker push us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest
 cd ..
 
 # Chatbot app
 cd chatbot-app
-docker build -t us.icr.io/sigma-ns/sigma-chatbot:latest .
-docker push us.icr.io/sigma-ns/sigma-chatbot:latest
+docker build -t us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest .
+docker push us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest
 cd ..
 ```
 
@@ -75,7 +75,7 @@ echo "Your MCP_API_KEY is: $MCP_API_KEY"
 # Save this value — you will need it when deploying the chatbot app and configuring Orchestrate
 
 ibmcloud ce secret create \
-  --name sigma-mcp-secrets \
+  --name mcp-app-code-engine-mcp-secrets \
   --from-literal MCP_API_KEY="$MCP_API_KEY"
 ```
 
@@ -83,10 +83,10 @@ ibmcloud ce secret create \
 
 ```bash
 ibmcloud ce application create \
-  --name sigma-mcp-server \
-  --image us.icr.io/sigma-ns/sigma-mcp-server:latest \
-  --registry-secret sigma-icr \
-  --env-from-secret sigma-mcp-secrets \
+  --name mcp-app-code-engine-mcp-server \
+  --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest \
+  --registry-secret mcp-app-code-engine-icr \
+  --env-from-secret mcp-app-code-engine-mcp-secrets \
   --port 8080 \
   --cpu 0.5 \
   --memory 1G \
@@ -97,9 +97,9 @@ ibmcloud ce application create \
 ### 5.4.3 Get the MCP server URL
 
 ```bash
-ibmcloud ce application get --name sigma-mcp-server --output url
+ibmcloud ce application get --name mcp-app-code-engine-mcp-server --output url
 # Example output:
-# https://sigma-mcp-server.<random>.us-south.codeengine.appdomain.cloud
+# https://mcp-app-code-engine-mcp-server.<random>.us-south.codeengine.appdomain.cloud
 ```
 
 Save this URL as `MCP_SERVER_URL` — you need it next.
@@ -133,7 +133,7 @@ JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(48).toString('he
 
 ```bash
 ibmcloud ce secret create \
-  --name sigma-chatbot-secrets \
+  --name mcp-app-code-engine-chatbot-secrets \
   --from-literal JWT_SECRET="$JWT_SECRET" \
   --from-literal MCP_API_KEY="$MCP_API_KEY"
 ```
@@ -142,7 +142,7 @@ ibmcloud ce secret create \
 
 ```bash
 ibmcloud ce configmap create \
-  --name sigma-chatbot-config \
+  --name mcp-app-code-engine-chatbot-config \
   --from-literal MCP_SERVER_URL="$MCP_SERVER_URL"
 ```
 
@@ -150,11 +150,11 @@ ibmcloud ce configmap create \
 
 ```bash
 ibmcloud ce application create \
-  --name sigma-chatbot \
-  --image us.icr.io/sigma-ns/sigma-chatbot:latest \
-  --registry-secret sigma-icr \
-  --env-from-secret sigma-chatbot-secrets \
-  --env-from-configmap sigma-chatbot-config \
+  --name mcp-app-code-engine-chatbot \
+  --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest \
+  --registry-secret mcp-app-code-engine-icr \
+  --env-from-secret mcp-app-code-engine-chatbot-secrets \
+  --env-from-configmap mcp-app-code-engine-chatbot-config \
   --port 8080 \
   --cpu 0.5 \
   --memory 1G \
@@ -165,9 +165,9 @@ ibmcloud ce application create \
 ### 5.5.5 Get the chatbot URL
 
 ```bash
-ibmcloud ce application get --name sigma-chatbot --output url
+ibmcloud ce application get --name mcp-app-code-engine-chatbot --output url
 # Example:
-# https://sigma-chatbot.<random>.us-south.codeengine.appdomain.cloud
+# https://mcp-app-code-engine-chatbot.<random>.us-south.codeengine.appdomain.cloud
 ```
 
 Open this URL in your browser — you should see the Sigma Support Chatbot UI.
@@ -211,13 +211,13 @@ After pushing new Docker images:
 ```bash
 # MCP server
 ibmcloud ce application update \
-  --name sigma-mcp-server \
-  --image us.icr.io/sigma-ns/sigma-mcp-server:latest
+  --name mcp-app-code-engine-mcp-server \
+  --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-mcp-server:latest
 
 # Chatbot
 ibmcloud ce application update \
-  --name sigma-chatbot \
-  --image us.icr.io/sigma-ns/sigma-chatbot:latest
+  --name mcp-app-code-engine-chatbot \
+  --image us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest
 ```
 
 Code Engine performs a rolling update with zero downtime.
@@ -228,8 +228,8 @@ Code Engine performs a rolling update with zero downtime.
 
 | Application | CPU | Memory | Min Scale | Max Scale | Port |
 |---|---|---|---|---|---|
-| `sigma-mcp-server` | 0.5 vCPU | 1 GB | 1 | 5 | 8080 |
-| `sigma-chatbot` | 0.5 vCPU | 1 GB | 1 | 10 | 8080 |
+| `mcp-app-code-engine-mcp-server` | 0.5 vCPU | 1 GB | 1 | 5 | 8080 |
+| `mcp-app-code-engine-chatbot` | 0.5 vCPU | 1 GB | 1 | 10 | 8080 |
 
 Adjust `--cpu`, `--memory`, `--min-scale`, and `--max-scale` based on your actual load.
 

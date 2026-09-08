@@ -4,7 +4,7 @@ This folder contains everything you need to:
 
 1. Build and deploy an MCP server to IBM Code Engine
 2. Build and deploy a JWT-secured chatbot app (with refund flow) to IBM Code Engine
-3. Push all code to GitHub (`https://github.com/cmukupa/sigma`)
+3. Push all code to GitHub (`https://github.com/cmukupa/mcp-app-code-engine`)
 4. Integrate the MCP server with IBM Watson Orchestrate
 
 ---

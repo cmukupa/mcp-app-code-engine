@@ -88,8 +88,8 @@ ibmcloud target -g Default
 
 ### Create a Code Engine project (do this once)
 ```bash
-ibmcloud ce project create --name sigma-project
-ibmcloud ce project select --name sigma-project
+ibmcloud ce project create --name mcp-app-code-engine-project
+ibmcloud ce project select --name mcp-app-code-engine-project
 
 # Verify
 ibmcloud ce project current
@@ -99,7 +99,7 @@ ibmcloud ce project current
 ```bash
 # Replace <region> with your nearest region, e.g. us-south
 ibmcloud cr region-set us-south
-ibmcloud cr namespace-add sigma-ns
+ibmcloud cr namespace-add mcp-app-code-engine-ns
 
 # Verify
 ibmcloud cr namespace-list
@@ -123,7 +123,7 @@ gh auth login
 
 ### Create the target repository (if it does not exist yet)
 ```bash
-gh repo create cmukupa/sigma --public --description "MCP Server + Chatbot on IBM Code Engine"
+gh repo create cmukupa/mcp-app-code-engine --public --description "MCP Server + Chatbot on IBM Code Engine"
 # If it already exists, skip this step
 ```
 
@@ -138,7 +138,7 @@ Collect these values before starting the build guides. Store them in a local `.e
 # IBM Cloud
 IBM_CLOUD_API_KEY=<your-ibm-cloud-api-key>       # IAM → API Keys in IBM Cloud console
 ICR_REGION=us.icr.io                              # or your region
-ICR_NAMESPACE=sigma-ns
+ICR_NAMESPACE=mcp-app-code-engine-ns
 
 # JWT secret for the chatbot app (generate a strong random value)
 JWT_SECRET=<at-least-32-random-characters>
@@ -158,11 +158,11 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ## 1.6 Checklist Before Continuing
 
 - [ ] `node --version` returns v20+
-- [ ] `ibmcloud ce project current` shows `sigma-project`
-- [ ] `ibmcloud cr namespace-list` shows `sigma-ns`
+- [ ] `ibmcloud ce project current` shows `mcp-app-code-engine-project`
+- [ ] `ibmcloud cr namespace-list` shows `mcp-app-code-engine-ns`
 - [ ] `docker info` succeeds (daemon running)
 - [ ] `gh auth status` shows authenticated
 - [ ] `.env` file created with all values above
-- [ ] Repository `https://github.com/cmukupa/sigma` exists
+- [ ] Repository `https://github.com/cmukupa/mcp-app-code-engine` exists
 
 When all boxes are checked, proceed to **02-mcp-server-build.md**.

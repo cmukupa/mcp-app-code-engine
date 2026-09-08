@@ -11,7 +11,7 @@ This guide walks you through building the JWT-secured chatbot application that:
 ## 3.1 Create the Project Directory
 
 ```bash
-# From the root of your sigma repo
+# From the root of your mcp-app-code-engine repo
 mkdir -p chatbot-app/src
 cd chatbot-app
 ```
@@ -74,7 +74,7 @@ User → POST /chat
 | Variable | Description |
 |---|---|
 | `JWT_SECRET` | Secret used to sign/verify JWTs (min 32 chars) |
-| `MCP_SERVER_URL` | Full URL of the deployed MCP server (e.g. `https://sigma-mcp.<region>.codeengine.appdomain.cloud`) |
+| `MCP_SERVER_URL` | Full URL of the deployed MCP server (e.g. `https://mcp-app-code-engine-mcp.<region>.codeengine.appdomain.cloud`) |
 | `MCP_API_KEY` | API key for the MCP server (`X-API-Key` header) |
 | `PORT` | Port to listen on (default: `8080`) |
 
@@ -130,14 +130,14 @@ Expected response:
 
 ```bash
 # From inside chatbot-app/
-docker build -t sigma-chatbot:latest .
+docker build -t mcp-app-code-engine-chatbot:latest .
 
 # Tag and push
-docker tag sigma-chatbot:latest us.icr.io/sigma-ns/sigma-chatbot:latest
-docker push us.icr.io/sigma-ns/sigma-chatbot:latest
+docker tag mcp-app-code-engine-chatbot:latest us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest
+docker push us.icr.io/mcp-app-code-engine-ns/mcp-app-code-engine-chatbot:latest
 
 # Verify
-ibmcloud cr image-list --restrict sigma-ns
+ibmcloud cr image-list --restrict mcp-app-code-engine-ns
 ```
 
 ---

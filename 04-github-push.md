@@ -1,6 +1,6 @@
 # Step 4 — Push Code to GitHub
 
-This guide pushes both apps to `https://github.com/cmukupa/sigma`.
+This guide pushes both apps to `https://github.com/cmukupa/mcp-app-code-engine`.
 
 ---
 
@@ -88,7 +88,7 @@ git commit -m "feat: initial MCP server and chatbot app
 
 ```bash
 # Add the remote (skip if already added)
-git remote add origin https://github.com/cmukupa/sigma.git
+git remote add origin https://github.com/cmukupa/mcp-app-code-engine.git
 
 # Push
 git push -u origin main
@@ -104,7 +104,7 @@ git push origin main
 
 ## 4.6 Verify on GitHub
 
-Open https://github.com/cmukupa/sigma in your browser and confirm you see:
+Open https://github.com/cmukupa/mcp-app-code-engine in your browser and confirm you see:
 - `mcp-server/` folder with `Dockerfile`, `package.json`, `tsconfig.json`, `src/`
 - `chatbot-app/` folder with the same structure
 
